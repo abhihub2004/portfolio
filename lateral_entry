@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lateral Entry Admission Dashboard</title>
+  <style>
+    /* Reset & base */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f9fafb;
+      color: #333;
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    button {
+      cursor: pointer;
+      border: none;
+      background: none;
+      font: inherit;
+    }
+
+    /* Layout */
+    .dashboard {
+      display: flex;
+      min-height: 100vh;
+    }
+    aside.sidebar {
+      width: 280px;
+      background: #3b82f6; /* Indigo 500 */
+      color: white;
+      display: flex;
+      flex-direction: column;
+      padding: 2rem 1.5rem;
+    }
+    aside.sidebar h1 {
+      font-size: 1.75rem;
+      margin-bottom: 2.5rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    nav.menu {
+      flex-grow: 1;
+    }
+    nav.menu button {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.75rem;
+      border-radius: 0.5rem;
+      font-weight: 600;
+      font-size: 1.1rem;
+      background: transparent;
+      transition: background-color 0.3s ease;
+    }
+    nav.menu button:hover,
+    nav.menu button.active {
+      background: #2563eb; /* Indigo 600 */
+    }
+    nav.menu button svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+    footer.sidebar-footer {
+      text-align: center;
+      font-size: 0.85rem;
+      opacity: 0.75;
+      margin-top: auto;
+    }
+
+    main.content {
+      flex-grow: 1;
+      padding: 2rem 3rem;
+      overflow-y: auto;
+    }
+    main.content h2 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+      color: #1e293b; /* Slate 800 */
+    }
+
+    /* Cards Grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 6px 12px rgb(0 0 0 / 0.1);
+      transition: box-shadow 0.3s ease;
+    }
+    .card:hover {
+      box-shadow: 0 8px 16px rgb(0 0 0 / 0.15);
+    }
+    .card h3 {
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin-bottom: 0.8rem;
+      color: #2563eb;
+    }
+    .card p {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 0;
+    }
+    .card small {
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    /* Notifications */
+    .notifications {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 6px 12px rgb(0 0 0 / 0.1);
+      margin-bottom: 2rem;
+    }
+    .notifications h3 {
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #2563eb;
+    }
+    .notification {
+      padding: 0.8rem 1rem;
+      border-radius: 0.5rem;
+      margin-bottom: 0.8rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .notification.success {
+      background: #dcfce7;
+      color: #22c55e;
+    }
+    .notification.warning {
+      background: #fef3c7;
+      color: #ca8a04;
+    }
+    .notification.info {
+      background: #dbeafe;
+      color: #2563eb;
+    }
+
+    /* Recent Activity */
+    .activity {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 6px 12px rgb(0 0 0 / 0.1);
+    }
+    .activity h3 {
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #2563eb;
+    }
+    .activity ul {
+      list-style: none;
+      padding-left: 0;
+      margin: 0;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    .activity li {
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 0.6rem;
+    }
+    .activity li time {
+      font-weight: 600;
+      color: #64748b;
+      margin-right: 0.7rem;
+      font-size: 0.85rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      main.content {
+        padding: 1rem 1.5rem;
+      }
+      aside.sidebar {
+        width: 220px;
+        padding: 1.5rem 1rem;
+      }
+      nav.menu button {
+        font-size: 1rem;
+      }
+    }
+    @media (max-width: 600px) {
+      .dashboard {
+        flex-direction: column;
+      }
+      aside.sidebar {
+        width: 100%;
+        flex-direction: row;
+        padding: 1rem;
+        overflow-x: auto;
+      }
+      nav.menu {
+        display: flex;
+        gap: 1rem;
+        flex-grow: 1;
+      }
+      nav.menu button {
+        flex-shrink: 0;
+        padding: 0.5rem 1rem;
+        border-radius: 0.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="dashboard">
+    <!-- Sidebar -->
+    <aside class="sidebar" role="navigation" aria-label="Main Navigation">
+      <h1>Lateral Entry</h1>
+      <nav class="menu">
+        <button class="active" aria-current="page">
+          🏠 Overview
+        </button>
+        <button>
+          📝 Student Registration
+        </button>
+        <button>
+          🎓 Academic Details
+        </button>
+        <button>
+          📂 Documents Verification
+        </button>
+        <button>
+          💰 Fee Management
+        </button>
+        <button>
+          🔐 Role Management
+        </button>
+        <button>
+          💾 Backup & Compliance
+        </button>
+      </nav>
+      <footer class="sidebar-footer">
+        &copy; 2025 KEA Lateral Entry Portal
+      </footer>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="content" role="main" aria-label="Dashboard Content">
+      <h2>Welcome, Admin!</h2>
+
+      <!-- Summary Cards -->
+      <section class="cards-grid" aria-label="Summary statistics">
+        <article class="card" tabindex="0">
+          <h3>Total Admissions</h3>
+          <p>432</p>
+          <small>Students admitted this year</small>
+        </article>
+        <article class="card" tabindex="0">
+          <h3>Documents Verified</h3>
+          <p>418</p>
+          <small>Complete & approved</small>
+        </article>
+        <article class="card" tabindex="0">
+          <h3>Pending Fees</h3>
+          <p>14</p>
+          <small>Students with pending fees</small>
+        </article>
+        <article class="card" tabindex="0">
+          <h3>Last Backup</h3>
+          <p>31 May 2025</p>
+          <small>Completed at 02:00 AM</small>
+        </article>
+      </section>
+
+      <!-- Notifications -->
+      <section class="notifications" aria-live="polite" aria-atomic="true">
+        <h3>Notifications</h3>
+        <div class="notification success" role="alert">✅ Backup completed successfully at 2:00 AM.</div>
+        <div class="notification warning" role="alert">⚠️ Document verification pending for 12 students.</div>
+        <div class="notification info" role="alert">ℹ️ New KEA audit scheduled on June 10, 2025.</div>
+      </section>
+
+      <!-- Recent Activity -->
+      <section class="activity" aria-label="Recent Activity Log">
+        <h3>Recent Activities</h3>
+        <ul>
+          <li tabindex="0">
+            <time datetime="2025-06-05T09:00">2 hours ago</time>
+            Admin Ravi verified documents of student CET2025432.
+          </li>
+          <li tabindex="0">
+            <time datetime="2025-06-04T18:00">5 hours ago</time>
+            Student Priya uploaded caste certificate.
+          </li>
+          <li tabindex="0">
+            <time datetime="2025-06-04T11:00">1 day ago</time>
+            Verifier Suresh rejected income certificate of CET2025341.
+          </li>
+        </ul>
+      </section>
+    </main>
+  </div>
+
+</body>
+</html>
